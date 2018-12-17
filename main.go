@@ -53,7 +53,7 @@ func main() {
 		panic(err.Error())
 	}
 	for {
-		pods, err := clientset.CoreV1().Pods("").List(metav1.ListOptions{})
+		pods, err := clientset.CoreV1().Pods("default").List(metav1.ListOptions{})
 		if err != nil {
 			panic(err.Error())
 		}
@@ -63,7 +63,7 @@ func main() {
 		// - Use helper functions like e.g. errors.IsNotFound()
 		// - And/or cast to StatusError and use its properties like e.g. ErrStatus.Message
 		namespace := "default"
-		pod := "example-xxxxx"
+		pod := "go-server-646ffc956f-7vjft"
 		_, err = clientset.CoreV1().Pods(namespace).Get(pod, metav1.GetOptions{})
 		if errors.IsNotFound(err) {
 			fmt.Printf("Pod %s in namespace %s not found\n", pod, namespace)
@@ -75,6 +75,10 @@ func main() {
 		} else {
 			fmt.Printf("Found pod %s in namespace %s\n", pod, namespace)
 		}
+		serviceName, err := clientset.CoreV1().Services(namespace).Get("go-server", metav1.GetOptions{})
+		fmt.Println(serviceName.Name)
+		fmt.Println(serviceName.GetLabels())
+		fmt.Println(serviceName.GetObjectKind)
 
 		time.Sleep(10 * time.Second)
 	}
