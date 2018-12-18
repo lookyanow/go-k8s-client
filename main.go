@@ -20,14 +20,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
-	"path/filepath"
-	"time"
-
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	"os"
+	"path/filepath"
 	// Uncomment the following line to load the gcp plugin (only required to authenticate against GKE clusters).
 	// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
@@ -52,42 +50,39 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-	for {
-		pods, err := clientset.CoreV1().Pods("default").List(metav1.ListOptions{})
-		if err != nil {
-			panic(err.Error())
-		}
-		fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
 
-		// Examples for error handling:
-		// - Use helper functions like e.g. errors.IsNotFound()
-		// - And/or cast to StatusError and use its properties like e.g. ErrStatus.Message
-		namespace := "default"
-		pod := "go-server-646ffc956f-7vjft"
-		_, err = clientset.CoreV1().Pods(namespace).Get(pod, metav1.GetOptions{})
-		if errors.IsNotFound(err) {
-			fmt.Printf("Pod %s in namespace %s not found\n", pod, namespace)
-		} else if statusError, isStatus := err.(*errors.StatusError); isStatus {
-			fmt.Printf("Error getting pod %s in namespace %s: %v\n",
-				pod, namespace, statusError.ErrStatus.Message)
-		} else if err != nil {
-			panic(err.Error())
-		} else {
-			fmt.Printf("Found pod %s in namespace %s\n", pod, namespace)
-		}
-		serviceName, err := clientset.CoreV1().Services(namespace).Get("go-server", metav1.GetOptions{})
-		fmt.Println(serviceName.Name)
-		fmt.Println(serviceName.GetLabels())
-		fmt.Println(serviceName.GetObjectKind)
-
-		scale, err := clientset.ExtensionsV1beta1().Deployments("default").GetScale("go-server", metav1.GetOptions{})
-		if err != nil{
-			panic(err)
-		}
-		fmt.Printf("%d replica count of go-server\n", scale.Status.Replicas)
-
-		time.Sleep(10 * time.Second)
+	pods, err := clientset.CoreV1().Pods("default").List(metav1.ListOptions{})
+	if err != nil {
+		panic(err.Error())
 	}
+	fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
+
+	// Examples for error handling:
+	// - Use helper functions like e.g. errors.IsNotFound()
+	// - And/or cast to StatusError and use its properties like e.g. ErrStatus.Message
+	namespace := "default"
+	pod := "go-server-646ffc956f-7vjft"
+	_, err = clientset.CoreV1().Pods(namespace).Get(pod, metav1.GetOptions{})
+	if errors.IsNotFound(err) {
+		fmt.Printf("Pod %s in namespace %s not found\n", pod, namespace)
+	} else if statusError, isStatus := err.(*errors.StatusError); isStatus {
+		fmt.Printf("Error getting pod %s in namespace %s: %v\n",
+			pod, namespace, statusError.ErrStatus.Message)
+	} else if err != nil {
+		panic(err.Error())
+	} else {
+		fmt.Printf("Found pod %s in namespace %s\n", pod, namespace)
+	}
+	serviceName, err := clientset.CoreV1().Services(namespace).Get("go-server", metav1.GetOptions{})
+	fmt.Println(serviceName.Name)
+	fmt.Println(serviceName.GetLabels())
+
+	scale, err := clientset.ExtensionsV1beta1().Deployments("default").GetScale("go-server", metav1.GetOptions{})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%d replica count of go-server\n", scale.Status.Replicas)
+
 }
 
 func homeDir() string {
