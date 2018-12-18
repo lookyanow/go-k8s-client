@@ -85,11 +85,6 @@ func main() {
 			panic(err)
 		}
 		fmt.Printf("%d replica count of go-server\n", scale.Status.Replicas)
-		scale.Status.Replicas = 3
-		_, err = clientset.ExtensionsV1beta1().Deployments("default").UpdateScale("go-server", scale)
-		if err != nil{
-			panic(err)
-		}
 
 		time.Sleep(10 * time.Second)
 	}
